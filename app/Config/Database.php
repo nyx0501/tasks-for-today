@@ -194,6 +194,16 @@ class Database extends Config
     {
         parent::__construct();
 
+        // Use Railway's MySQL service variables when they are present.
+        $host = getenv('MYSQLHOST');
+        if ($host !== false && $host !== '') {
+            $this->default['hostname'] = $host;
+            $this->default['username'] = getenv('MYSQLUSER') ?: 'root';
+            $this->default['password'] = getenv('MYSQLPASSWORD') ?: '';
+            $this->default['database'] = getenv('MYSQLDATABASE') ?: 'railway';
+            $this->default['port']     = (int) (getenv('MYSQLPORT') ?: 3306);
+        }
+
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
